@@ -5,11 +5,15 @@ const rp = require('request-promise');
 const fs = require('mz/fs')
 
 exports.notifi = async (title, msg, img, force) => {
+  const tmpDir = path.join(__dirname, '../../media/tmp');
+  if (!(await fs.exists(tmpDir))) {
+      await fs.mkdir(tmpDir);
+  }
   let sendNotify = function () {
     notifier.notify({
       title: title || 'YaRadio',
       message: msg || '-',
-      icon: img ? path.join(__dirname, '../../media/tmp', '100x100.jpeg') : path.join(__dirname, '../../media/icon', 'yaradio_64x64.png'),
+      icon: img ? path.join(tmpDir, '100x100.jpeg') : path.join(__dirname, '../../media/icon', 'yaradio_64x64.png'),
       sound: false,
       wait: false
     }, function (err) {
@@ -25,7 +29,7 @@ exports.notifi = async (title, msg, img, force) => {
         console.log('Error: Notifier', err);
       })
 
-      await fs.writeFile(path.join(__dirname, '../../media/tmp', '100x100.jpeg'), dataImg, { encoding: 'binary' }).catch((err) => {
+      await fs.writeFile(path.join(tmpDir, '100x100.jpeg'), dataImg, { encoding: 'binary' }).catch((err) => {
         console.log('Error: Notifier', err);
       })
 
